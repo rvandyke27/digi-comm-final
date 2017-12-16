@@ -16,7 +16,7 @@ berOQPSK2450 = zeros(1, length(EcNo));
 berZwave = zeros(1, length(EcNo));
 
 for idx = 1:length(EcNo) % loop over the EcNo range
-  % O-QPSK PHY, 2450 MHz  
+  % O-QPSK PHY, 2450 MHz  (for zigbee)
   waveform = lrwpan.PHYGeneratorOQPSK(message, spc, '2450 MHz');
   K = 2;      % information bits per symbol
   SNR = EcNo(idx) - 10*log10(spc) + 10*log10(K);
@@ -24,7 +24,7 @@ for idx = 1:length(EcNo) % loop over the EcNo range
   bits     = lrwpan.PHYDecoderOQPSKNoSync(received,  spc, '2450 MHz');
   [~, berOQPSK2450(idx)] = biterr(message, bits);
   
-  
+  % FSK (for Z-Wave)
   zwaveform = fskmod(message, M,freqsep,nsamp,Fs);
   received = awgn(zwaveform, EcNo(idx)+10*log10(k)-10*log10(nsamp), 'measured',[],'dB');
   %SNR = EcNo(idx) - 10*log10(nsamp) + 10*log10(k);
