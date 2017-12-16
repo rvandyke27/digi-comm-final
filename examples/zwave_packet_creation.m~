@@ -1,0 +1,16 @@
+% 1. create n bit (or byte?) message
+
+% 2. create modulated signal based on nrz coding
+ %print out chunk of frequency modulated message
+ 
+% 3. add preamble
+ 
+% 4. sent at high frequency (according to MAC protocol)
+%   indicate if there is a collision/succesful transmission of each node
+
+% 5. take first received signal
+% display chunk of waveform
+% 6. demodulate 
+% show demodulated chunk?
+
+% 7. show rece

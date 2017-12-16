@@ -6,11 +6,11 @@ EcNo = -25:2.5:25;                % Ec/No range of BER curves
 spc = 4;                            % samples per chip
 msgLen = 8*120;                     % length in bits
 message = randi([0 1], msgLen, 1);  % transmitted message
-M = 16;        % Modulation order
+M = 2;        % Modulation order
 k = log2(M);
 freqsep = 16;  % Frequency separation (Hz)
 nsamp = 25;    % Number of samples per symbol
-Fs = 1024;      % Sample rate (Hz)
+Fs = 1025;      % Sample rate (Hz)
  
 berOQPSK2450 = zeros(1, length(EcNo));
 berZwave = zeros(1, length(EcNo));
