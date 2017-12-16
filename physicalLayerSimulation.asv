@@ -9,7 +9,6 @@ message = randi([0 1], msgLen, 1);  % transmitted message
 
 berOQPSK2450 = zeros(len(EcNo));
 
-
 for idx = 1:length(EcNo) % loop over the EcNo range
   
   % O-QPSK PHY, 2450 MHz  
