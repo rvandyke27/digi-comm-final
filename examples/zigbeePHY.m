@@ -1,13 +1,14 @@
-%Simulation of Z-wave Physical Layer
+%Simulation of Zigbee Physical Layer
 %Looking at BER and Energy Consumption?
 
-EcNo = -25:2.5:17.5;                % Ec/No range of BER curves
+
+EcNo = -25:2.5:25;                % Ec/No range of BER curves
 spc = 4;                            % samples per chip
 msgLen = 8*120;                     % length in bits
 message = randi([0 1], msgLen, 1);  % transmitted message
 
 berOQPSK2450 = zeros(1, length(EcNo));
-berZwave = zeros(1, length(EcNo));
+berzwave = zeros(1, length(EcNo));
 
 for idx = 1:length(EcNo) % loop over the EcNo range
   % O-QPSK PHY, 2450 MHz  
@@ -17,27 +18,15 @@ for idx = 1:length(EcNo) % loop over the EcNo range
   received = awgn(waveform, SNR);
   bits     = lrwpan.PHYDecoderOQPSKNoSync(received,  spc, '2450 MHz');
   [~, berOQPSK2450(idx)] = biterr(message, bits);
-end
-
-  
-  
-  zwaveform = fskmod(message, M,freqsep,nsamp,Fs);
-  received = awgn(zwaveform, EcNo(idx)+10*log10(k)-10*log10(nsamp), 'measured',[],'dB');
-  %SNR = EcNo(idx) - 10*log10(nsamp) + 10*log10(k);
-  %received = awgn(zwaveform, SNR);
-  bits     = fskdemod(received, M, freqsep, nsamp, Fs);
-  [~, berZwave(idx)] = biterr(message, bits);
         
->>>>>>> cc38b86f9138d82476531c6a9faff5f27d47a722
 end
 
-disp(berZwave)
 
 % plot BER curve
 figure
-semilogy(EcNo, berZwave, '-o', EcNo, berOQPSK2450, '-+')
-legend('FSK', 'OQPSK')
-title('Z-Wave(FSK) and Zigbee(OQPSK) BER Comparison')
+semilogy(EcNo, berOQPSK2450, '-o')
+legend('OQPSK', '2.4GHz')
+title('IEEE 802.15.4 PHY BER Curves')
 xlabel('Chip Energy to Noise Spectral Density, Ec/No (dB)')
 ylabel('BER')
 axis([min(EcNo) max(EcNo) 10^-2 1])
