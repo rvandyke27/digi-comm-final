@@ -8,10 +8,9 @@ msgLen = 8*120;                     % length in bits
 message = randi([0 1], msgLen, 1);  % transmitted message
 M = 2;        % Modulation order
 k = log2(M);
-freqsep = 16;  % Frequency separation (Hz)
-nsamp = 25;    % Number of samples per symbol
-Fs = 1025;      % Sample rate (Hz)
- 
+freqsep = 40000;  % Frequency separation (Hz)
+Fs = 80000;      % Sample rate (Hz)
+nsamp = 2; % Number of samples per symbol
 berOQPSK2450 = zeros(1, length(EcNo));
 berZwave = zeros(1, length(EcNo));
  
@@ -24,7 +23,7 @@ for idx = 1:length(EcNo) % loop over the EcNo range
   bits     = lrwpan.PHYDecoderOQPSKNoSync(received,  spc, '2450 MHz');
   [~, berOQPSK2450(idx)] = biterr(message, bits);
   
-  % FSK (for Z-Wave)
+  % BFSK (for Z-Wave)
   zwaveform = fskmod(message, M,freqsep,nsamp,Fs);
   received = awgn(zwaveform, EcNo(idx)+10*log10(k)-10*log10(nsamp), 'measured',[],'dB');
   %SNR = EcNo(idx) - 10*log10(nsamp) + 10*log10(k);
