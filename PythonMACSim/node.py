@@ -13,6 +13,7 @@ class Node:
 		Node.nodeID = Node.nodeID + 1
 		self.node_type = node_type
 
+		#start with empty mesage
 		self.message = Message(0)
 		self.received = ""
 		self.awake = True
@@ -36,7 +37,7 @@ class Node:
 		#transmit if channel not busy and backoff finished
 
 		#if unsuccesful max_try attempts, give up and indicate that transmission failed 
-		if(self.attempt_num == 5):
+		if(self.attempt_num == 3):
 			self.attempt_num = 0
 			self.message.length = 0
 			self.message.data = ""

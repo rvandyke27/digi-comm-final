@@ -13,6 +13,7 @@ class Connection:
 
 
 		if(sending_node.message.ack == True):
+			receiving_node.backoff = int(float(sending_node.message.length/40000)*1000)
 			receiving_node.message.data = "ack"
 			receiving_node.message.length = 4
 			receiving_node.message.ack = False

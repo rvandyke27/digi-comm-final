@@ -3,6 +3,8 @@ import sys
 from node import Node
 import random
 from message import Message
+import matplotlib.pyplot as plt
+
 class Medium:
 
 	def __init__(self, num_controllers, num_controlled_devices, packet_loss_rate):
@@ -31,89 +33,129 @@ class Medium:
 		self.busy = False 
 
 def main():
-		num_controllers = int(sys.argv[1])
-		num_controlled_devices = int(sys.argv[2])
-		packet_loss_rate = float(sys.argv[3])
-		runtime = int(sys.argv[4])
-		traffic = float(sys.argv[5])
-		medium = Medium(num_controllers, num_controlled_devices, packet_loss_rate)
-		last_sender = 0
-		# for node in medium.node_list:
-		# 	node.printNode()
 
+
+
+#	num_controllers = int(sys.argv[1])
+#	num_controlled_devices = int(sys.argv[2])
+#	packet_loss_rate = float(sys.argv[4])
+	runtime = int(sys.argv[1])
+	#traffic = float(sys.argv[5])
+#	medium = Medium(num_controllers, num_controlled_devices, packet_loss_rate)
+	big_list = list()
+
+	list_slist = list()
+	list_dlist = list()
+	# for node in medium.node_list:
+	# 	node.printNode()
+	#successes = list()
+	#drops = list()
 		#simulation is conducted in discrete time intervals where each loop represents 1 msec
 
 #		medium.node_list[3].transmit(medium.node_list[8])
 
-		if(traffic <= 0):
-			print("Not a valid traffic value")
+		# if(traffic <= 0):
+		# 	print("Not a valid traffic value")
+	for i in range(10):
+		num_controllers = 2*(i+1)
+		num_controlled_devices = 20*(i+1)
+		medium = Medium(num_controllers, num_controlled_devices, 0)			
+		s_list = list()
+		d_list = list()
+		throughput_dict = {}
+		for traffic in range(5):
+			transmit_probability = float(traffic + 1)/10000.0
+			print("transmit probability: ", transmit_probability)
+			busy_counter = 0
+			transmissions = 0
+			attempts = 0
+			ready_controllers = 0
+			num_acks = 0
+			for i in range(runtime*1000):
 
-		transmit_probability = float(traffic)/10000.0
-		print("transmit probability: ", transmit_probability)
+				if (i % 100 == 0):
+					print(i, " milliseconds")
 
-		busy_counter = 0
-		transmissions = 0
-		attempts = 0
-		ready_controllers = 0
-		num_acks = 0
-		for i in range(runtime*1000):
+				busy_counter = busy_counter - 1
 
-			if (i % 100 == 0):
-				print(i, " milliseconds")
+				#randomly decide which nodes have data to transmit based on traffic parameter
+				for node in medium.controller_list:
+					#if( (node.message.length == 0) and (random.random() < transmit_probability) ):
+					node.message = Message(transmit_probability)
+				#	node.message.length = 8*random.randint(20,140)	
 
-			busy_counter = busy_counter - 1
-
-			#randomly decide which nodes have data to transmit based on traffic parameter
-			for node in medium.controller_list:
-				#if( (node.message.length == 0) and (random.random() < transmit_probability) ):
-				node.message = Message(transmit_probability)
-			#	node.message.length = 8*random.randint(20,140)	
-					
-			if(busy_counter > 0):
-				medium.busy = True
+				# for node in medium.device_list:
+				# 	if(random.random() < sleep_probability):
+				# 		node.awake = False
+						
+				if(busy_counter > 0):
+					medium.busy = True
 
 
-			else:
-				medium.busy = False			
+				else:
+					medium.busy = False			
 
 
-			# "send" clear channel assessment based on if medium is busy 
-			for node in medium.node_list:
-				node.cca = not (medium.busy)
+				# "send" clear channel assessment based on if medium is busy 
+				for node in medium.node_list:
+					node.cca = not (medium.busy)
 
 
-			index = 0
-			for node in medium.node_list:
-				index = index + 1
-				if(node.message.length > 0):
-					if(node.transmit(medium.device_list[random.randint(0, len(medium.device_list) - 1)])):
-						busy_counter = int(40000/node.message.length)
-						node.message.length = 0
-						node.message.data = ""
-						if(node.message.data != "ack"):
-							transmissions = transmissions + 1
-							attempts = attempts + 1
-						# elif(node.message.data == "ack"):
-						# 	num_acks = num_acks + 1
-						for node in medium.node_list[index:]:
+				index = 0
+				for node in medium.node_list:
+					index = index + 1
+					if(node.message.length > 0):
+						if(node.transmit(medium.device_list[random.randint(0, len(medium.device_list) - 1)])):
+							busy_counter = int(float(node.message.length/40000)*1000)
 							node.message.length = 0
 							node.message.data = ""
-					else:
-						if(node.message.data != "ack"):
-							attempts = attempts + 1
+							if(node.message.data != "ack"):
+								transmissions = transmissions + 1
+								attempts = attempts + 1
+
+							for node in medium.node_list[index:]:
+								node.message.length = 0
+								node.message.data = ""
+						else:
+							if(node.message.data != "ack"):
+								attempts = attempts + 1
+
+				Node.nodeID = 0
+
+
+			print("Successful Transmissions: ", transmissions)
+			print("Drops: ", Node.drops)
+
+			s_list.append(transmissions)
+			d_list.append(Node.drops)
+			transmissions = 0
+			Node.drops = 0
+			Node.acks = 0
+
+		list_slist.append(s_list)
+		list_dlist.append(d_list)
+	
+	
 
 
 
+	plt.figure(1)
+	for i in range(len(list_slist)):
+		plt.subplot(2,5,i+1)
+		plt.plot([1,2,3,4,5], list_slist[i], 'g')#, label = "Successful Transmissions")
+		plt.plot([1,2,3,4,5], list_dlist[i], 'r')#,label = "Dropped Packets")
+		plt.axis([1, 5, 0, 100])
+	#	plt.xlabel()
+
+		plt.title(str(2*(i+1) + 20*(i+1)) + " Total Devices", fontsize = 8)
+		plt.xlabel("Traffic Level (10^-3 %)", fontsize = 6)
+	plt.loc = "lower right"
+	plt.legend()
+	plt.show()
 
 
-
-		print("Successful Transmissions: ", transmissions)
-		print("Drops: ", Node.drops)
-		print("ACKS: ", Node.acks)
-		#if(attempts > 0): print("Success Rate: ", float(transmissions/attempts))
-
-
-
+	
+	#plt.show()
 
 if __name__=="__main__":
 	main()	

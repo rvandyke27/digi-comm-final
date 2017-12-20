@@ -10,23 +10,23 @@ class Message:
 		if(random.random() < probability):
 			if(d == 0): 
 				self.data = "TURN LIGHT ON"
-				self.ack = False
-				self.length = 8*len(self.data)
+				self.ack = True
+				self.length = 8*random.randint(20,120)
 			elif(d == 1): 
 				self.data = "CLOSE THE BLINDS"
-				self.length = 8*len(self.data)
-				self.ack = False
+				self.length = 8*random.randint(20,120)
+				self.ack = True
 			elif(d == 2): 
 				self.data = "MAKE COFFEE"
-				self.length = 8*len(self.data)
-				self.ack = False
+				self.length = 8*random.randint(20,120)
+				self.ack = True
 			elif(d == 3): 
 				self.data = "TURN UP THE AC"
-				self.length = 8*len(self.data)
-				self.ack = False
+				self.length = 8*random.randint(20,120)
+				self.ack = True
 			elif(d == 4): 
 				self.data = "FOLLOW YOUR HEART"
-				self.length = 8*len(self.data)
+				self.length = 8*random.randint(20,120)
 				self.ack = True
 			#self.ack = True
 		else:
